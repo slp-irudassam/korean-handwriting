@@ -91,6 +91,15 @@
   .pwrap{margin-bottom:10mm;}
   .pwrap:last-child{margin-bottom:0;}
   .pageno{text-align:center; font-size:11px; color:#aaa; margin-top:5mm;}
+  .pagefoot{display:flex; justify-content:space-between; align-items:center; margin-top:5mm; font-size:10px; color:#b3b6bb; letter-spacing:.3px;}
+  .pagefoot .foot-handle{font-weight:700; color:#9aa0a6;}
+  .stepper-group{display:flex; gap:10px;}
+  .stepper-group > div{flex:1;}
+  .stepper-group .cap{font-size:11px; color:var(--muted); margin-bottom:5px; text-align:center;}
+  .stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .stepper button{width:34px; height:34px; border:none; background:#fff; font-size:18px; line-height:1; cursor:pointer; color:var(--accent); font-weight:700;}
+  .stepper button:hover{background:var(--accent-soft);}
+  .stepper .num{flex:1; text-align:center; font-size:15px; font-weight:800;}
 
   /* ===== 인쇄 ===== */
   @media print{
@@ -124,9 +133,24 @@
   </div>
 
   <div class="field">
+    <label>칸 수</label>
+    <div class="stepper-group">
+      <div>
+        <div class="cap">가로 칸</div>
+        <div class="stepper"><button data-step="cols" data-d="-1">−</button><span class="num" id="colsNum"></span><button data-step="cols" data-d="1">＋</button></div>
+      </div>
+      <div>
+        <div class="cap">세로 줄</div>
+        <div class="stepper"><button data-step="rows" data-d="-1">−</button><span class="num" id="rowsNum"></span><button data-step="rows" data-d="1">＋</button></div>
+      </div>
+    </div>
+    <span class="hint">칸 크기는 A4 용지에 맞춰 자동으로 조절돼요.</span>
+  </div>
+
+  <div class="field">
     <label>글자 크기 <span class="val" id="sizeVal"></span></label>
-    <input type="range" id="size" min="14" max="40" step="1">
-    <span class="hint">칸 크기(mm)를 조절해요. 클수록 한 줄에 들어가는 글자가 적어져요.</span>
+    <input type="range" id="size" min="40" max="85" step="1">
+    <span class="hint">칸 대비 글자가 차지하는 비율이에요.</span>
   </div>
 
   <div class="field">
@@ -166,6 +190,13 @@
 
   <div class="divider"></div>
 
+  <div class="field">
+    <label>꼬리말 <span class="hint">페이지 아래에 표시돼요</span></label>
+    <input type="text" id="footer" placeholder="예: @slp_irudassam">
+  </div>
+
+  <div class="divider"></div>
+
   <div class="actions">
     <button class="btn btn-primary" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
   </div>
@@ -195,8 +226,8 @@ const FONTS = [
 
 const DEFAULTS = {
   text:"동해물과 백두산이 마르고 닳도록\n하느님이 보우하사 우리나라 만세\n무궁화 삼천리 화려강산\n대한 사람 대한으로 길이 보전하세",
-  font:"Nanum Pen Script", size:24, guide:"cross", mode:"trace",
-  orient:"portrait", removeSpace:false, removeBreak:false
+  font:"Nanum Pen Script", size:62, cols:11, rows:14, guide:"cross", mode:"trace",
+  orient:"portrait", removeSpace:false, removeBreak:false, footer:"@slp_irudassam"
 };
 let S = {...DEFAULTS};
 
@@ -238,11 +269,11 @@ function render(){
   const pad = 14;
   const innerW = pageW - pad*2;
   const innerH = pageH - pad*2;
-  const cell = S.size;                 // mm
-  const cols = Math.max(1, Math.floor(innerW/cell));
-  const rowsPerPage = Math.max(1, Math.floor(innerH/cell));
+  const cols = Math.max(1, S.cols);
+  const rowsPerPage = Math.max(1, S.rows);
+  const cell = Math.min(innerW/cols, innerH/rowsPerPage);  // mm, 정사각형, A4에 맞춤
   const gb = guideBG(S.guide);
-  const fontPx = cell*0.62;            // mm 기준 글자 크기 (CSS mm 단위)
+  const fontPx = cell*(S.size/100);    // 칸 대비 글자 비율
 
   // 입력 줄을 칸 줄(row)들로 분해
   let rows = [];
@@ -306,9 +337,14 @@ function render(){
     });
 
     paper.appendChild(grid);
-    const no=document.createElement("div");
-    no.className="pageno"; no.textContent=`${pi+1} / ${pages.length}`;
-    paper.appendChild(no);
+    const foot=document.createElement("div");
+    foot.className="pagefoot";
+    const fh=document.createElement("span");
+    fh.className="foot-handle"; fh.textContent=S.footer||"";
+    const fn=document.createElement("span");
+    fn.textContent=`${pi+1} / ${pages.length}`;
+    foot.appendChild(fh); foot.appendChild(fn);
+    paper.appendChild(foot);
     wrap.appendChild(paper);
     papers.appendChild(wrap);
   });
@@ -341,7 +377,10 @@ function syncUI(){
   document.getElementById("text").value=S.text;
   document.getElementById("font").value=S.font;
   document.getElementById("size").value=S.size;
-  document.getElementById("sizeVal").textContent=S.size+"mm";
+  document.getElementById("sizeVal").textContent=S.size+"%";
+  document.getElementById("colsNum").textContent=S.cols;
+  document.getElementById("rowsNum").textContent=S.rows;
+  document.getElementById("footer").value=S.footer;
   document.getElementById("removeSpace").checked=S.removeSpace;
   document.getElementById("removeBreak").checked=S.removeBreak;
   setSeg("guide",S.guide); setSeg("mode",S.mode); setSeg("orient",S.orient);
@@ -350,7 +389,16 @@ function syncUI(){
 
 document.getElementById("text").addEventListener("input",e=>{S.text=e.target.value;render();});
 document.getElementById("font").addEventListener("change",e=>{S.font=e.target.value;render();});
-document.getElementById("size").addEventListener("input",e=>{S.size=+e.target.value;document.getElementById("sizeVal").textContent=S.size+"mm";render();});
+document.getElementById("size").addEventListener("input",e=>{S.size=+e.target.value;document.getElementById("sizeVal").textContent=S.size+"%";render();});
+document.getElementById("footer").addEventListener("input",e=>{S.footer=e.target.value;render();});
+document.querySelectorAll("[data-step]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const k=b.dataset.step, d=+b.dataset.d;
+    S[k]=Math.max(1, Math.min(40, S[k]+d));
+    document.getElementById(k+"Num").textContent=S[k];
+    render();
+  });
+});
 document.getElementById("removeSpace").addEventListener("change",e=>{S.removeSpace=e.target.checked;render();});
 document.getElementById("removeBreak").addEventListener("change",e=>{S.removeBreak=e.target.checked;render();});
 ["guide","mode","orient"].forEach(id=>{
