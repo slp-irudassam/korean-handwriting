@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>글씨 쓰기 연습장 만들기</title>
-<style id="pageStyle">@page{size:A4 portrait; margin:10mm;}</style>
+<style id="pageStyle">@page{size:A4 portrait; margin:0;}</style>
 <style id="customFonts">
 /* === 눈누 등에서 추가한 웹폰트 (받아쓰기용) === */
 @font-face {
@@ -106,7 +106,7 @@
     body{background:#fff;}
     .panel,.stage-bar{display:none !important;}
     .stage{padding:0; overflow:visible;}
-    .paper{box-shadow:none; margin:0; padding:0; border-radius:0;}
+    .paper{box-shadow:none; margin:0; border-radius:0;}
     .pwrap{page-break-after:always; margin-bottom:0;}
     .pwrap:last-child{page-break-after:auto;}
   }
@@ -265,10 +265,10 @@ function render(){
   const landscape = S.orient==="landscape";
   const pageW = landscape?297:210, pageH = landscape?210:297;
   document.getElementById("pageStyle").textContent =
-    `@page{size:A4 ${landscape?"landscape":"portrait"}; margin:10mm;}`;
+    `@page{size:A4 ${landscape?"landscape":"portrait"}; margin:0;}`;
   const pad = 14;
   const innerW = pageW - pad*2;
-  const innerH = pageH - pad*2;
+  const innerH = pageH - pad*2 - 10;   // 하단 꼬리말 영역 확보(2페이지 넘침 방지)
   const cols = Math.max(1, S.cols);
   const rowsPerPage = Math.max(1, S.rows);
   const cell = Math.min(innerW/cols, innerH/rowsPerPage);  // mm, 정사각형, A4에 맞춤
