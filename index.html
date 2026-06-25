@@ -5,18 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>글씨 쓰기 연습장 만들기</title>
 <style id="pageStyle">@page{size:A4 portrait; margin:0;}</style>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <style id="customFonts">
-/* === 눈누 등에서 추가한 웹폰트 (받아쓰기용) === */
-@font-face {
-    font-family: 'SchoolSafeDictation';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimBadasseugiTTF-L.woff2') format('woff2');
-    font-weight: normal;
-    font-display: swap;
-}
+/* === 받아쓰기/글씨 연습용 웹폰트 (눈누, jsDelivr CDN) === */
+@font-face { font-family:'SchoolSafeDictation'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimBadasseugiTTF-L.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'NostalgicMongtori'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-1@1.0/Griun_Mongtori-Rg.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'ImHyeMin'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Regular.woff2') format('woff'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'ImHyeMin'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2') format('woff'); font-weight:700; font-display:swap; }
+@font-face { font-family:'OngleipBohyeon'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105@1.1/Bohyun.woff') format('woff'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'OngleipParkDahyeon'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'SchoolSafetyPictureDiary'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimGeurimilgiTTF-R.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'WatermelonYang'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-4@1.0/RixXladywatermelonR.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'Cafe24Dongdong'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/Cafe24Dongdong.woff') format('woff'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'OngleipTterom'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/2408-4@1.0/Ownglyph_ttaerom-Rg.woff2') format('woff2'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'GangwonEducationSaeum'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff') format('woff'); font-weight:normal; font-display:swap; }
+@font-face { font-family:'GangwonEducationModuche'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFLightA.woff') format('woff'); font-weight:300; font-display:swap; }
+@font-face { font-family:'GangwonEducationModuche'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEdu_OTFBoldA.woff') format('woff'); font-weight:700; font-display:swap; }
+@font-face { font-family:'Cafe24Gowoonbam'; src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/Cafe24Oneprettynight.woff') format('woff'); font-weight:normal; font-display:swap; }
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Nanum+Myeongjo&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Gaegu&family=Jua&family=Do+Hyeon&family=Gowun+Dodum&family=Gowun+Batang&family=Hi+Melody&family=Single+Day&family=Black+Han+Sans&family=Sunflower:wght@300&family=Cute+Font&family=Poor+Story&family=East+Sea+Dokdo&family=Yeon+Sung&family=Gugi&family=Kirang+Haerang&family=Song+Myung&family=Gamja+Flower&family=Gugi&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f4f5f7; --panel:#ffffff; --ink:#1f2328; --muted:#6b7280;
@@ -215,13 +221,17 @@
 <script>
 const FONTS = [
   ["SchoolSafeDictation","학교안심 받아쓰기"],
-  ["Nanum Gothic","나눔고딕"],["Gowun Dodum","고운돋움"],["Nanum Myeongjo","나눔명조"],
-  ["Gowun Batang","고운바탕"],["Song Myung","송명"],["Do Hyeon","도현체"],
-  ["Black Han Sans","검은고딕"],["Jua","주아체"],["Gaegu","개구쟁이"],
-  ["Nanum Pen Script","나눔손글씨 펜"],["Nanum Brush Script","나눔손글씨 붓"],
-  ["Hi Melody","하이멜로디"],["Gamja Flower","감자꽃"],["Poor Story","푸어스토리"],
-  ["Single Day","싱글데이"],["East Sea Dokdo","동해독도"],["Yeon Sung","연성체"],
-  ["Kirang Haerang","기랑해랑"],["Cute Font","큐트폰트"],["Gugi","구기체"],["Sunflower","해바라기"]
+  ["NostalgicMongtori","그리운 몽토리체"],
+  ["ImHyeMin","IM 혜민체"],
+  ["OngleipBohyeon","온글잎 보현체"],
+  ["OngleipParkDahyeon","온글잎 박다현체"],
+  ["SchoolSafetyPictureDiary","학교안심 그림일기"],
+  ["WatermelonYang","수박양체"],
+  ["Cafe24Dongdong","카페24 동동"],
+  ["OngleipTterom","온글잎 때롬체"],
+  ["GangwonEducationSaeum","강원교육새음체"],
+  ["GangwonEducationModuche","강원교육모두체"],
+  ["Cafe24Gowoonbam","카페24 고운밤"]
 ];
 
 const DEFAULTS = {
