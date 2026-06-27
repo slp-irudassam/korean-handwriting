@@ -193,6 +193,8 @@
   <label class="toggle"><input type="checkbox" id="removeSpace"> 공백 제거</label>
   <div style="height:10px"></div>
   <label class="toggle"><input type="checkbox" id="removeBreak"> 줄바꿈 무시(이어 붙이기)</label>
+  <div style="height:10px"></div>
+  <label class="toggle"><input type="checkbox" id="practiceLine"> 글자 줄 아래에 빈 줄 추가</label>
 
   <div class="divider"></div>
 
@@ -230,7 +232,7 @@ const FONTS = [
 const DEFAULTS = {
   text:"오늘은 날씨가 참 맑아요\n친구와 사이좋게 지내요\n바른 자세로 글을 써요\n손을 깨끗이 씻습니다\n책을 읽으니 재미있어요",
   font:"SchoolSafeDictation", size:62, cols:11, rows:14, guide:"cross", mode:"trace",
-  orient:"portrait", removeSpace:false, removeBreak:false
+  orient:"portrait", removeSpace:false, removeBreak:false, practiceLine:false
 };
 let S = {...DEFAULTS};
 
@@ -286,6 +288,7 @@ function render(){
     for(let i=0;i<chars.length;i+=cols){
       rows.push({chars:chars.slice(i,i+cols)});
     }
+    if(S.practiceLine) rows.push({chars:[]});   // 글자 줄 아래 빈 줄(직접 쓰는 칸)
   }
   if(rows.length===0) rows.push({chars:[]});
 
@@ -385,6 +388,7 @@ function syncUI(){
   document.getElementById("rowsNum").textContent=S.rows;
   document.getElementById("removeSpace").checked=S.removeSpace;
   document.getElementById("removeBreak").checked=S.removeBreak;
+  document.getElementById("practiceLine").checked=S.practiceLine;
   setSeg("guide",S.guide); setSeg("mode",S.mode); setSeg("orient",S.orient);
   document.getElementById("modeHint").textContent=MODE_HINT[S.mode];
 }
@@ -402,6 +406,7 @@ document.querySelectorAll("[data-step]").forEach(b=>{
 });
 document.getElementById("removeSpace").addEventListener("change",e=>{S.removeSpace=e.target.checked;render();});
 document.getElementById("removeBreak").addEventListener("change",e=>{S.removeBreak=e.target.checked;render();});
+document.getElementById("practiceLine").addEventListener("change",e=>{S.practiceLine=e.target.checked;render();});
 ["guide","mode","orient"].forEach(id=>{
   document.getElementById(id).addEventListener("click",e=>{
     const b=e.target.closest("button"); if(!b)return;
