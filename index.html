@@ -196,13 +196,6 @@
 
   <div class="divider"></div>
 
-  <div class="field">
-    <label>꼬리말 <span class="hint">페이지 아래에 표시돼요</span></label>
-    <input type="text" id="footer" placeholder="예: @slp_irudassam">
-  </div>
-
-  <div class="divider"></div>
-
   <div class="actions">
     <button class="btn btn-primary" onclick="window.print()">🖨️ 인쇄 / PDF 저장</button>
   </div>
@@ -237,7 +230,7 @@ const FONTS = [
 const DEFAULTS = {
   text:"동해물과 백두산이 마르고 닳도록\n하느님이 보우하사 우리나라 만세\n무궁화 삼천리 화려강산\n대한 사람 대한으로 길이 보전하세",
   font:"SchoolSafeDictation", size:62, cols:11, rows:14, guide:"cross", mode:"trace",
-  orient:"portrait", removeSpace:false, removeBreak:false, footer:"@slp_irudassam"
+  orient:"portrait", removeSpace:false, removeBreak:false
 };
 let S = {...DEFAULTS};
 
@@ -350,7 +343,7 @@ function render(){
     const foot=document.createElement("div");
     foot.className="pagefoot";
     const fh=document.createElement("span");
-    fh.className="foot-handle"; fh.textContent=S.footer||"";
+    fh.className="foot-handle"; fh.textContent="@slp_irudassam";
     const fn=document.createElement("span");
     fn.textContent=`${pi+1} / ${pages.length}`;
     foot.appendChild(fh); foot.appendChild(fn);
@@ -390,7 +383,6 @@ function syncUI(){
   document.getElementById("sizeVal").textContent=S.size+"%";
   document.getElementById("colsNum").textContent=S.cols;
   document.getElementById("rowsNum").textContent=S.rows;
-  document.getElementById("footer").value=S.footer;
   document.getElementById("removeSpace").checked=S.removeSpace;
   document.getElementById("removeBreak").checked=S.removeBreak;
   setSeg("guide",S.guide); setSeg("mode",S.mode); setSeg("orient",S.orient);
@@ -400,7 +392,6 @@ function syncUI(){
 document.getElementById("text").addEventListener("input",e=>{S.text=e.target.value;render();});
 document.getElementById("font").addEventListener("change",e=>{S.font=e.target.value;render();});
 document.getElementById("size").addEventListener("input",e=>{S.size=+e.target.value;document.getElementById("sizeVal").textContent=S.size+"%";render();});
-document.getElementById("footer").addEventListener("input",e=>{S.footer=e.target.value;render();});
 document.querySelectorAll("[data-step]").forEach(b=>{
   b.addEventListener("click",()=>{
     const k=b.dataset.step, d=+b.dataset.d;
